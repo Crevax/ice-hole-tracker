@@ -11,9 +11,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.GoogleMap;
 
 public class HomeScreen extends FragmentActivity implements
         GoogleApiClient.ConnectionCallbacks,
@@ -28,10 +26,8 @@ public class HomeScreen extends FragmentActivity implements
     */
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,13 +102,12 @@ public class HomeScreen extends FragmentActivity implements
     }
 
     public void GetGPSCoordinates(View v) {
-        try {
-            Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-            if (location == null) {
-                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-            }
-
+        if (location == null) {
+            Toast.makeText(getApplicationContext(), "Waiting for location", Toast.LENGTH_LONG)
+                    .show();
+        } else {
             String msgText = String.format("Lat: %1$s, Long: %2$s, Alt: %3$s, Acc: %4$s, Time: %5$s",
                     location.getLatitude(),
                     location.getLongitude(),
@@ -121,10 +116,6 @@ public class HomeScreen extends FragmentActivity implements
                     location.getTime());
             Toast msg = Toast.makeText(getApplicationContext(), msgText, Toast.LENGTH_LONG);
             msg.show();
-        } catch (Exception ex) {
-            Toast.makeText(getApplicationContext(), "Could not retrieve location information."
-                    + "\nPlease make sure location service is on and try again", Toast.LENGTH_LONG)
-                    .show();
         }
     }
 
