@@ -3,21 +3,25 @@ package com.cjdavis.iceholetracker;
 import android.content.IntentSender;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 public class HomeScreen extends FragmentActivity implements
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        GoogleApiClient.OnConnectionFailedListener {
 
+    // TODO: Rewrite App so everything doesn't happen in one activity
     public static final String TAG = HomeScreen.class.getSimpleName();
 
     /*
@@ -25,26 +29,44 @@ public class HomeScreen extends FragmentActivity implements
     * This code is returned in Activity.onActivityResult
     */
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
-
+    private final static String FOLDER_NAME = "IceHoleTracker";
+    private final static String FILE_NAME = "saved-depths.csv";
 
     private GoogleApiClient mGoogleApiClient;
+    private File directory;
+    private File records;
+    private EditText edtHoleDepth;
+
+    private SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
 
+        edtHoleDepth = (EditText)findViewById(R.id.edtHoleDepth);
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+        if(!checkFile()) {
+            Toast.makeText(getApplicationContext(), "Error with sile storage. Check log for more details",
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mGoogleApiClient.connect();
+
+        if(!checkFile()) {
+            Toast.makeText(getApplicationContext(), "Error with sile storage. Check log for more details",
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -52,7 +74,6 @@ public class HomeScreen extends FragmentActivity implements
         super.onPause();
 
         if (mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
     }
@@ -64,11 +85,6 @@ public class HomeScreen extends FragmentActivity implements
 
     @Override
     public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
 
     }
 
@@ -108,19 +124,79 @@ public class HomeScreen extends FragmentActivity implements
             Toast.makeText(getApplicationContext(), "Waiting for location", Toast.LENGTH_LONG)
                     .show();
         } else {
-            String msgText = String.format("Lat: %1$s, Long: %2$s, Alt: %3$s, Acc: %4$s, Time: %5$s",
-                    location.getLatitude(),
-                    location.getLongitude(),
-                    location.getAltitude(),
-                    location.getAccuracy(),
-                    location.getTime());
-            Toast msg = Toast.makeText(getApplicationContext(), msgText, Toast.LENGTH_LONG);
-            msg.show();
+            // TODO: compare location.getTime(), and if it's too old (we'll determine that later), request a location update)
+            try {
+                // TODO: Find a better method of saving the file
+                FileWriter writer = new FileWriter(records, true);
+                writer.write(String.format("%1$s,%2$s,%3$s,%4$s,%5$s,%6$s\n",
+                        sdfDate.format(System.currentTimeMillis()),
+                        edtHoleDepth.getText(),
+                        location.getLatitude(),
+                        location.getLongitude(),
+                        location.getAltitude(),
+                        location.getAccuracy()));
+                writer.close();
+                Toast.makeText(getApplicationContext(), "Saved to file!", Toast.LENGTH_LONG)
+                        .show();
+            } catch (IOException ex) {
+                Log.e(TAG, ex.getMessage());
+            }
         }
     }
 
     public void SendGPSCoordinates(View v) {
+        // TODO: Read last line from CSV and Display its text (Test), Email CSV on Production
         Toast msg = Toast.makeText(getApplicationContext(), "Send the CSV file dang nabbit!", Toast.LENGTH_LONG);
         msg.show();
+    }
+
+    public boolean isStorageReadable() {
+        String storageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(storageState) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(storageState)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isStorageWritable() {
+        String storageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(storageState)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean checkFile() {
+        // TODO: Find out the proper way to create this file in public store
+        if (isStorageReadable() && isStorageWritable()) {
+            directory = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOCUMENTS), FOLDER_NAME
+            );
+            if (!directory.exists() && !directory.mkdirs()) {
+                Log.e(TAG,"Unable to create directory for file storage");
+                return false;
+            } else {
+                records = new File(directory.getPath(), FILE_NAME);
+                if (!records.exists()) {
+                    try {
+                        records.createNewFile();
+                        FileWriter writer = new FileWriter(records);
+                        writer.write("timestamp,depth,latitude,longitude,altitude,accuracy\n");
+                        writer.close();
+                    } catch (IOException ex) {
+                        Log.e(TAG, ex.getMessage());
+                       return false;
+                    }
+                }
+            }
+        } else {
+            Log.e(TAG, "File system is not writable");
+            return false;
+        }
+
+        return true;
     }
 }
