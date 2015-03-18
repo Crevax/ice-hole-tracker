@@ -53,7 +53,7 @@ public class HomeScreen extends FragmentActivity implements
                 .build();
 
         if(!checkFile()) {
-            Toast.makeText(getApplicationContext(), "Error with sile storage. Check log for more details",
+            Toast.makeText(getApplicationContext(), "Error with file storage. Check log for more details",
                     Toast.LENGTH_LONG).show();
         }
     }
@@ -64,7 +64,7 @@ public class HomeScreen extends FragmentActivity implements
         mGoogleApiClient.connect();
 
         if(!checkFile()) {
-            Toast.makeText(getApplicationContext(), "Error with sile storage. Check log for more details",
+            Toast.makeText(getApplicationContext(), "Error with file storage. Check log for more details",
                     Toast.LENGTH_LONG).show();
         }
     }
