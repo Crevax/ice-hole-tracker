@@ -145,9 +145,9 @@ public class HomeScreen extends FragmentActivity implements
     }
 
     public void SendGPSCoordinates(View v) {
-        // TODO: Read last line from CSV and Display its text (Test), Email CSV on Production
-        Toast msg = Toast.makeText(getApplicationContext(), "Send the CSV file dang nabbit!", Toast.LENGTH_LONG);
-        msg.show();
+        // TODO: Call Intent for Email app and attach file to new email
+        Toast.makeText(getApplicationContext(), "Not implemented yet!",
+                Toast.LENGTH_LONG).show();
     }
 
     public boolean isStorageReadable() {
