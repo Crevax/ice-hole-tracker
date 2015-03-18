@@ -141,6 +141,8 @@ public class HomeScreen extends FragmentActivity implements
             } catch (IOException ex) {
                 Log.e(TAG, ex.getMessage());
             }
+
+            edtHoleDepth.setText("");
         }
     }
 
