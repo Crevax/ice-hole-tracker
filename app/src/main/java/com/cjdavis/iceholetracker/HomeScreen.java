@@ -36,6 +36,8 @@ public class HomeScreen extends FragmentActivity implements
     private File directory;
     private File records;
     private EditText edtHoleDepth;
+    private EditText edtNotes;
+
 
     private SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -45,6 +47,8 @@ public class HomeScreen extends FragmentActivity implements
         setContentView(R.layout.activity_home_screen);
 
         edtHoleDepth = (EditText)findViewById(R.id.edtHoleDepth);
+        edtNotes = (EditText)findViewById(R.id.edtNotes);
+
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -128,13 +132,14 @@ public class HomeScreen extends FragmentActivity implements
             try {
                 // TODO: Find a better method of saving the file
                 FileWriter writer = new FileWriter(records, true);
-                writer.write(String.format("%1$s,%2$s,%3$s,%4$s,%5$s,%6$s\n",
+                writer.write(String.format("%1$s,%2$s,%3$s,%4$s,%5$s,%6$s,\"%7$s\"\n",
                         sdfDate.format(System.currentTimeMillis()),
                         edtHoleDepth.getText(),
                         location.getLatitude(),
                         location.getLongitude(),
                         location.getAltitude(),
-                        location.getAccuracy()));
+                        location.getAccuracy(),
+                        edtNotes.getText()));
                 writer.close();
                 Toast.makeText(getApplicationContext(), "Saved to file!", Toast.LENGTH_LONG)
                         .show();
@@ -143,6 +148,7 @@ public class HomeScreen extends FragmentActivity implements
             }
 
             edtHoleDepth.setText("");
+            edtNotes.setText("");
         }
     }
 
@@ -186,7 +192,7 @@ public class HomeScreen extends FragmentActivity implements
                     try {
                         records.createNewFile();
                         FileWriter writer = new FileWriter(records);
-                        writer.write("timestamp,depth,latitude,longitude,altitude,accuracy\n");
+                        writer.write("timestamp,depth,latitude,longitude,altitude,accuracy,notes\n");
                         writer.close();
                     } catch (IOException ex) {
                         Log.e(TAG, ex.getMessage());
