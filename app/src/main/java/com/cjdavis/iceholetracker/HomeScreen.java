@@ -2,6 +2,7 @@ package com.cjdavis.iceholetracker;
 
 import android.content.IntentSender;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
@@ -11,6 +12,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import java.io.File;
 import java.io.FileWriter;
@@ -19,7 +22,8 @@ import java.text.SimpleDateFormat;
 
 public class HomeScreen extends FragmentActivity implements
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
 
     // TODO: Rewrite App so everything doesn't happen in one activity
     public static final String TAG = HomeScreen.class.getSimpleName();
@@ -33,6 +37,7 @@ public class HomeScreen extends FragmentActivity implements
     private final static String FILE_NAME = "saved-depths.csv";
 
     private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
     private File directory;
     private File records;
     private EditText edtHoleDepth;
@@ -56,6 +61,11 @@ public class HomeScreen extends FragmentActivity implements
                 .addApi(LocationServices.API)
                 .build();
 
+        mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(10 * 1000)
+                .setFastestInterval(1 * 1000);
+
         if(!checkFile()) {
             Toast.makeText(getApplicationContext(), "Error with file storage. Check log for more details",
                     Toast.LENGTH_LONG).show();
@@ -78,13 +88,14 @@ public class HomeScreen extends FragmentActivity implements
         super.onPause();
 
         if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
 
     @Override
@@ -119,6 +130,11 @@ public class HomeScreen extends FragmentActivity implements
              */
             Log.i(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
         }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
     }
 
     public void GetGPSCoordinates(View v) {
