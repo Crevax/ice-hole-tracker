@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
@@ -33,6 +34,7 @@ public class HomeScreen extends FragmentActivity implements
     * This code is returned in Activity.onActivityResult
     */
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    private final static float MIN_ACCURACY = 20.0f;
     private final static String FOLDER_NAME = "IceHoleTracker";
     private final static String FILE_NAME = "saved-depths.csv";
 
@@ -42,7 +44,7 @@ public class HomeScreen extends FragmentActivity implements
     private File records;
     private EditText edtHoleDepth;
     private EditText edtNotes;
-
+    private Button btnSubmit;
 
     private SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -53,7 +55,7 @@ public class HomeScreen extends FragmentActivity implements
 
         edtHoleDepth = (EditText)findViewById(R.id.edtHoleDepth);
         edtNotes = (EditText)findViewById(R.id.edtNotes);
-
+        btnSubmit = (Button)findViewById(R.id.btnSubmit);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -76,6 +78,7 @@ public class HomeScreen extends FragmentActivity implements
     protected void onResume() {
         super.onResume();
         mGoogleApiClient.connect();
+        btnSubmit.setEnabled(false);
 
         if(!checkFile()) {
             Toast.makeText(getApplicationContext(), "Error with file storage. Check log for more details",
@@ -134,7 +137,11 @@ public class HomeScreen extends FragmentActivity implements
 
     @Override
     public void onLocationChanged(Location location) {
-
+        if (location.getAccuracy() <= MIN_ACCURACY) {
+            btnSubmit.setEnabled(true);
+        } else {
+            btnSubmit.setEnabled(false);
+        }
     }
 
     public void GetGPSCoordinates(View v) {
