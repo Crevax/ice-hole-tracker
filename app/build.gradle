@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "me.cjdavis.iceholetracker"
+        applicationId "com.cjdavis.iceholetracker"
         minSdkVersion 15
         targetSdkVersion 26
         versionCode 2

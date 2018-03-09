@@ -1,4 +1,4 @@
-package me.cjdavis.iceholetracker
+package com.cjdavis.iceholetracker
 
 import org.junit.Test
 
