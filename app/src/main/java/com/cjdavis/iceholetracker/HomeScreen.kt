@@ -1,21 +1,20 @@
 package com.cjdavis.iceholetracker
 
+import android.annotation.SuppressLint
 import android.content.IntentSender
 import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
 import android.os.Environment
 import android.support.v4.app.FragmentActivity
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationListener
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import kotlinx.android.synthetic.main.activity_home_screen.*
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -23,24 +22,32 @@ import java.text.SimpleDateFormat
 
 class HomeScreen : FragmentActivity(), GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    private var mGoogleApiClient: GoogleApiClient? = null
-    private var mLocationRequest: LocationRequest? = null
-    private var directory: File? = null
-    private var records: File? = null
-    private var edtHoleDepth: EditText? = null
-    private var edtNotes: EditText? = null
-    private var btnSubmit: Button? = null
+    private val mGoogleApiClient by lazy {
+        GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build()
+    }
+    private val mLocationRequest by lazy {
+        LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval((10 * 1000).toLong())
+                .setFastestInterval((1 * 1000).toLong())
+    }
+    private lateinit var directory: File
+    private lateinit var records: File
 
     private val sdfDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
-    val isStorageReadable: Boolean
+    private val isStorageReadable: Boolean
         get() {
             val storageState = Environment.getExternalStorageState()
             return Environment.MEDIA_MOUNTED == storageState || Environment.MEDIA_MOUNTED_READ_ONLY == storageState
 
         }
 
-    val isStorageWritable: Boolean
+    private val isStorageWritable: Boolean
         get() {
             val storageState = Environment.getExternalStorageState()
             return Environment.MEDIA_MOUNTED == storageState
@@ -51,21 +58,6 @@ class HomeScreen : FragmentActivity(), GoogleApiClient.ConnectionCallbacks, Goog
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_screen)
 
-        edtHoleDepth = findViewById<View>(R.id.edtHoleDepth) as EditText
-        edtNotes = findViewById<View>(R.id.edtNotes) as EditText
-        btnSubmit = findViewById<View>(R.id.btnSubmit) as Button
-
-        mGoogleApiClient = GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build()
-
-        mLocationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval((10 * 1000).toLong())
-                .setFastestInterval((1 * 1000).toLong())
-
         if (!checkFile()) {
             Toast.makeText(applicationContext, "Error with file storage. Check log for more details",
                     Toast.LENGTH_LONG).show()
@@ -74,8 +66,8 @@ class HomeScreen : FragmentActivity(), GoogleApiClient.ConnectionCallbacks, Goog
 
     override fun onResume() {
         super.onResume()
-        mGoogleApiClient!!.connect()
-        btnSubmit!!.isEnabled = false
+        mGoogleApiClient.connect()
+        btnSubmit.isEnabled = false
 
         if (!checkFile()) {
             Toast.makeText(applicationContext, "Error with file storage. Check log for more details",
@@ -86,12 +78,13 @@ class HomeScreen : FragmentActivity(), GoogleApiClient.ConnectionCallbacks, Goog
     override fun onPause() {
         super.onPause()
 
-        if (mGoogleApiClient!!.isConnected) {
+        if (mGoogleApiClient.isConnected) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this)
-            mGoogleApiClient!!.disconnect()
+            mGoogleApiClient.disconnect()
         }
     }
 
+    @SuppressLint("MissingPermission")
     override fun onConnected(bundle: Bundle?) {
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this)
     }
@@ -130,10 +123,12 @@ class HomeScreen : FragmentActivity(), GoogleApiClient.ConnectionCallbacks, Goog
     }
 
     override fun onLocationChanged(location: Location) {
-        btnSubmit!!.isEnabled = location.accuracy <= MIN_ACCURACY
+        Log.d("Application", "LocationChanged $location")
+        btnSubmit.isEnabled = location.accuracy <= MIN_ACCURACY
     }
 
-    fun GetGPSCoordinates(v: View) {
+    @SuppressLint("MissingPermission")
+    fun getGPSCoordinates(v: View) {
         val location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient)
 
         if (location == null) {
@@ -143,15 +138,15 @@ class HomeScreen : FragmentActivity(), GoogleApiClient.ConnectionCallbacks, Goog
             // TODO: compare location.getTime(), and if it's too old (we'll determine that later), request a location update)
             try {
                 // TODO: Find a better method of saving the file
-                val writer = FileWriter(records!!, true)
+                val writer = FileWriter(records, true)
                 writer.write(String.format("%1\$s,%2\$s,%3\$s,%4\$s,%5\$s,%6\$s,\"%7\$s\"\n",
                         sdfDate.format(System.currentTimeMillis()),
-                        edtHoleDepth!!.text,
+                        edtHoleDepth.text,
                         location.latitude,
                         location.longitude,
                         location.altitude,
                         location.accuracy,
-                        edtNotes!!.text))
+                        edtNotes.text))
                 writer.close()
                 Toast.makeText(applicationContext, "Saved to file!", Toast.LENGTH_LONG)
                         .show()
@@ -159,12 +154,12 @@ class HomeScreen : FragmentActivity(), GoogleApiClient.ConnectionCallbacks, Goog
                 Log.e(TAG, ex.message)
             }
 
-            edtHoleDepth!!.setText("")
-            edtNotes!!.setText("")
+            edtHoleDepth.setText("")
+            edtNotes.setText("")
         }
     }
 
-    fun SendGPSCoordinates(v: View) {
+    fun sendGPSCoordinates(v: View) {
         // TODO: Call Intent for Email app and attach file to new email
         Toast.makeText(applicationContext, "Not implemented yet!",
                 Toast.LENGTH_LONG).show()
@@ -176,15 +171,15 @@ class HomeScreen : FragmentActivity(), GoogleApiClient.ConnectionCallbacks, Goog
             directory = File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOCUMENTS), FOLDER_NAME
             )
-            if (!directory!!.exists() && !directory!!.mkdirs()) {
+            if (!directory.exists() && !directory.mkdirs()) {
                 Log.e(TAG, "Unable to create directory for file storage")
                 return false
             } else {
-                records = File(directory!!.path, FILE_NAME)
-                if (!records!!.exists()) {
+                records = File(directory.path, FILE_NAME)
+                if (!records.exists()) {
                     try {
-                        records!!.createNewFile()
-                        val writer = FileWriter(records!!)
+                        records.createNewFile()
+                        val writer = FileWriter(records)
                         writer.write("timestamp,depth,latitude,longitude,altitude,accuracy,notes\n")
                         writer.close()
                     } catch (ex: IOException) {
@@ -205,15 +200,15 @@ class HomeScreen : FragmentActivity(), GoogleApiClient.ConnectionCallbacks, Goog
     companion object {
 
         // TODO: Rewrite App so everything doesn't happen in one activity
-        val TAG = HomeScreen::class.java.simpleName
+        val TAG: String = HomeScreen::class.java.simpleName
 
         /*
          * Define a request code to send to Google Play services
          * This code is returned in Activity.onActivityResult
          */
-        private val CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000
-        private val MIN_ACCURACY = 20.0f
-        private val FOLDER_NAME = "IceHoleTracker"
-        private val FILE_NAME = "saved-depths.csv"
+        private const val CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000
+        private const val MIN_ACCURACY = 20.0f
+        private const val FOLDER_NAME = "IceHoleTracker"
+        private const val FILE_NAME = "saved-depths.csv"
     }
 }
