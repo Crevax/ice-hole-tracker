@@ -23,6 +23,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:hint="@string/depth_prompt"
+            android:text="@={ vm.holeDepth }"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />
 
@@ -59,6 +60,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignRight="@+id/edtHoleDepth"
             android:layout_alignEnd="@+id/edtHoleDepth"
+            android:text="@={ vm.notes }"
             android:hint="@string/notes_prompt" />
     </RelativeLayout>
 

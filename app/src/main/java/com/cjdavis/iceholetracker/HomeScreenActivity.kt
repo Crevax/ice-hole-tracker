@@ -159,12 +159,12 @@ class HomeScreen : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, Goo
                 val writer = FileWriter(records, true)
                 writer.write(String.format("%1\$s,%2\$s,%3\$s,%4\$s,%5\$s,%6\$s,\"%7\$s\"\n",
                         sdfDate.format(System.currentTimeMillis()),
-                        edtHoleDepth.text,
+                        vm.holeDepth.get(),
                         location.latitude,
                         location.longitude,
                         location.altitude,
                         location.accuracy,
-                        edtNotes.text))
+                        vm.notes.get()))
                 writer.close()
                 Toast.makeText(applicationContext, "Saved to file!", Toast.LENGTH_LONG)
                         .show()
@@ -172,8 +172,7 @@ class HomeScreen : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, Goo
                 Log.e(TAG, ex.message)
             }
 
-            edtHoleDepth.setText("")
-            edtNotes.setText("")
+            vm.resetInput()
         }
     }
 
