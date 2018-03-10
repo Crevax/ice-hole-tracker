@@ -1,11 +1,11 @@
 package com.cjdavis.iceholetracker
 
 import android.annotation.SuppressLint
+import android.arch.lifecycle.Observer
 import android.content.IntentSender
 import android.location.Location
 import android.os.Bundle
 import android.os.Environment
-import android.support.v4.app.FragmentActivity
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -19,8 +19,12 @@ import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.text.SimpleDateFormat
+import android.arch.lifecycle.ViewModelProviders
+import android.databinding.DataBindingUtil
+import android.support.v7.app.AppCompatActivity
+import com.cjdavis.iceholetracker.databinding.ActivityHomeScreenBinding
 
-class HomeScreen : FragmentActivity(), GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+class HomeScreen : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private val mGoogleApiClient by lazy {
         GoogleApiClient.Builder(this)
@@ -54,14 +58,28 @@ class HomeScreen : FragmentActivity(), GoogleApiClient.ConnectionCallbacks, Goog
 
         }
 
+    private var binding: ActivityHomeScreenBinding? = null
+    lateinit var vm: HomeScreenViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_screen)
+
+        vm = ViewModelProviders.of(this).get(HomeScreenViewModel::class.java)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_home_screen)
+        binding?.setVariable(BR.vm, vm)
+        subscribeUI()
+        vm.start()
 
         if (!checkFile()) {
             Toast.makeText(applicationContext, "Error with file storage. Check log for more details",
                     Toast.LENGTH_LONG).show()
         }
+    }
+
+    override fun onDestroy() {
+        binding = null
+        super.onDestroy()
     }
 
     override fun onResume() {
@@ -159,12 +177,6 @@ class HomeScreen : FragmentActivity(), GoogleApiClient.ConnectionCallbacks, Goog
         }
     }
 
-    fun sendGPSCoordinates(v: View) {
-        // TODO: Call Intent for Email app and attach file to new email
-        Toast.makeText(applicationContext, "Not implemented yet!",
-                Toast.LENGTH_LONG).show()
-    }
-
     private fun checkFile(): Boolean {
         // TODO: Find out the proper way to create this file in public store
         if (isStorageReadable && isStorageWritable) {
@@ -195,6 +207,13 @@ class HomeScreen : FragmentActivity(), GoogleApiClient.ConnectionCallbacks, Goog
         }
 
         return true
+    }
+
+    private fun subscribeUI() {
+        vm.userMsg.observe(this, Observer { msg ->
+            Toast.makeText(applicationContext, msg,
+                    Toast.LENGTH_LONG).show()
+        })
     }
 
     companion object {
