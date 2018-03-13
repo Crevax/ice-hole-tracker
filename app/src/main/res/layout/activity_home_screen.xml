@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:text="@string/submit"
             android:id="@+id/btnSubmit"
-            android:onClick="getGPSCoordinates"
+            android:onClick="@{ () -> vm.saveGPSCoordinates() }"
             android:layout_below="@+id/edtNotes"
             android:layout_alignRight="@+id/edtNotes"
             android:layout_alignEnd="@+id/edtNotes"
