@@ -1,67 +1,73 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable name="vm" type="com.cjdavis.iceholetracker.HomeScreenViewModel" />
         <import type="android.view.View" />
     </data>
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin">
+        android:layout_height="match_parent">
 
         <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:ems="10"
             android:id="@+id/edtHoleDepth"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:hint="@string/depth_prompt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="@={ vm.holeDepth }"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:inputType="numberDecimal"
+            android:hint="@string/depth_prompt"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/edtNotes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@={ vm.notes }"
+            android:hint="@string/notes_prompt"
+            app:layout_constraintTop_toBottomOf="@id/edtHoleDepth" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/submit"
-            android:id="@+id/btnSubmit"
             android:onClick="@{ () -> vm.saveGPSCoordinates() }"
-            android:layout_below="@+id/edtNotes"
-            android:layout_alignRight="@+id/edtNotes"
-            android:layout_alignEnd="@+id/edtNotes"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            app:layout_constraintTop_toBottomOf="@id/edtNotes" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:id="@+id/btnSend"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/send"
-            android:id="@+id/btnSend"
             android:onClick="@{ () -> vm.sendGPSCoordinates() }"
-            android:layout_below="@+id/btnSubmit"
-            android:layout_alignRight="@+id/btnSubmit"
-            android:layout_alignEnd="@+id/btnSubmit"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            app:layout_constraintTop_toBottomOf="@id/btnSubmit" />
 
-        <EditText
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/current_latitude"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/edtNotes"
-            android:layout_below="@+id/edtHoleDepth"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/edtHoleDepth"
-            android:layout_alignEnd="@+id/edtHoleDepth"
-            android:text="@={ vm.notes }"
-            android:hint="@string/notes_prompt" />
-    </RelativeLayout>
+            android:text="@{ Double.toString(vm.currentLocation.latitude) }"
+            app:layout_constraintTop_toBottomOf="@id/btnSend"
+            tools:text="0.0" />
+
+        <TextView
+            android:id="@+id/current_longitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{ Double.toString(vm.currentLocation.longitude) }"
+            app:layout_constraintTop_toBottomOf="@id/current_latitude"
+            tools:text="0.0" />
+
+        <TextView
+            android:id="@+id/current_accuracy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{ Double.toString(vm.currentLocation.accuracy) }"
+            app:layout_constraintTop_toBottomOf="@id/current_longitude"
+            tools:text="0.0" />
+    </android.support.constraint.ConstraintLayout>
 
 </layout>

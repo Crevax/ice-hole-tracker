@@ -43,6 +43,7 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$support_version"
     implementation "com.google.android.gms:play-services-location:$google_play_services_version"
     implementation "android.arch.lifecycle:extensions:$android_arch_version"
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
     //Data Binding
     kapt "com.android.databinding:compiler:$compiler_version"
