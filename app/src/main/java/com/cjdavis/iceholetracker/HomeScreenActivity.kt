@@ -17,9 +17,13 @@ import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.support.v7.app.AppCompatActivity
 import com.cjdavis.iceholetracker.databinding.ActivityHomeScreenBinding
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 
-class HomeScreen : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-
+class HomeScreenActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
     private val mGoogleApiClient by lazy {
         GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -33,19 +37,24 @@ class HomeScreen : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, Goo
                 .setInterval((10 * 1000).toLong())
                 .setFastestInterval((1 * 1000).toLong())
     }
+    private val mapFragment by lazy {
+        supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+    }
+    private lateinit var googleMap: GoogleMap
 
     private var binding: ActivityHomeScreenBinding? = null
     private lateinit var vm: HomeScreenViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home_screen)
 
         vm = ViewModelProviders.of(this).get(HomeScreenViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home_screen)
         binding?.setVariable(BR.vm, vm)
         subscribeUI()
         vm.start()
+
+        mapFragment?.getMapAsync(this)
     }
 
     override fun onDestroy() {
@@ -108,7 +117,16 @@ class HomeScreen : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, Goo
 
     override fun onLocationChanged(location: Location) {
         vm.currentLocation.set(location)
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(location.latitude, location.longitude)))
         btnSubmit.isEnabled = location.accuracy <= MIN_ACCURACY
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onMapReady(map: GoogleMap?) {
+        map?.let {
+            googleMap = it
+            googleMap.isMyLocationEnabled = true
+        }
     }
 
     private fun subscribeUI() {
@@ -121,7 +139,7 @@ class HomeScreen : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, Goo
     companion object {
 
         // TODO: Rewrite App so everything doesn't happen in one activity
-        val TAG: String = HomeScreen::class.java.simpleName
+        val TAG: String = HomeScreenActivity::class.java.simpleName
 
         /*
          * Define a request code to send to Google Play services
