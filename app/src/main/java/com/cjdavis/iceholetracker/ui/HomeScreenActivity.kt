@@ -1,4 +1,4 @@
-package com.cjdavis.iceholetracker
+package com.cjdavis.iceholetracker.ui
 
 import android.annotation.SuppressLint
 import android.arch.lifecycle.Observer
@@ -16,6 +16,8 @@ import kotlinx.android.synthetic.main.activity_home_screen.*
 import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.support.v7.app.AppCompatActivity
+import com.cjdavis.iceholetracker.BR
+import com.cjdavis.iceholetracker.R
 import com.cjdavis.iceholetracker.databinding.ActivityHomeScreenBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap

@@ -1,4 +1,4 @@
-package com.cjdavis.iceholetracker
+package com.cjdavis.iceholetracker.ui
 
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableField

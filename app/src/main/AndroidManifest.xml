@@ -19,7 +19,7 @@
             android:value="REPLACE_ME" />
 
         <activity
-            android:name=".HomeScreenActivity"
+            android:name=".ui.HomeScreenActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>

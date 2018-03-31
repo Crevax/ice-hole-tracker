@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable name="vm" type="com.cjdavis.iceholetracker.HomeScreenViewModel" />
+        <variable name="vm" type="com.cjdavis.iceholetracker.ui.HomeScreenViewModel" />
         <import type="android.view.View" />
     </data>
 
@@ -26,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:cameraZoom="18"
-                tools:context=".HomeScreenActivity"/>
+                tools:context=".ui.HomeScreenActivity"/>
 
             <TextView
                 android:id="@+id/current_latitude_label"
