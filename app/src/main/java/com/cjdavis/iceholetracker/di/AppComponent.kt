@@ -14,6 +14,7 @@ import javax.inject.Singleton
     (AndroidInjectionModule::class),
     (AndroidSupportInjectionModule::class),
     (AppModule::class),
+    (GoogleServicesModule::class),
     (UserInterfaceModule::class)
 ])
 interface AppComponent : AndroidInjector<IceHoleTrackerApplication> {

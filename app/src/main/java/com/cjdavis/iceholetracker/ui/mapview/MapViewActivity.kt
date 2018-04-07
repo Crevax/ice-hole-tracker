@@ -21,6 +21,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.activity_map_view.*
+import javax.inject.Inject
 
 class MapViewActivity : BaseActivity<MapViewViewModel, ActivityMapViewBinding>(),
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -29,13 +30,8 @@ class MapViewActivity : BaseActivity<MapViewViewModel, ActivityMapViewBinding>()
     override val viewModelClassToken = MapViewViewModel::class.java
     override val layoutId = R.layout.activity_map_view
 
-    private val mGoogleApiClient by lazy {
-        GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build()
-    }
+    @Inject lateinit var mGoogleApiClient : GoogleApiClient
+
     private val mLocationRequest by lazy {
         LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -50,6 +46,8 @@ class MapViewActivity : BaseActivity<MapViewViewModel, ActivityMapViewBinding>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        mGoogleApiClient.registerConnectionFailedListener(this)
+        mGoogleApiClient.registerConnectionCallbacks(this)
         mapFragment?.getMapAsync(this)
     }
 
@@ -69,6 +67,13 @@ class MapViewActivity : BaseActivity<MapViewViewModel, ActivityMapViewBinding>()
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this)
             mGoogleApiClient.disconnect()
         }
+    }
+
+    override fun onStop() {
+        mGoogleApiClient.unregisterConnectionFailedListener(this)
+        mGoogleApiClient.unregisterConnectionCallbacks(this)
+
+        super.onStop()
     }
 
     @SuppressLint("MissingPermission")
