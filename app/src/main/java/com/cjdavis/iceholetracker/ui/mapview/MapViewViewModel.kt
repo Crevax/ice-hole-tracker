@@ -1,17 +1,18 @@
-package com.cjdavis.iceholetracker.ui
+package com.cjdavis.iceholetracker.ui.mapview
 
-import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableField
 import android.location.Location
 import android.os.Environment
 import android.util.Log
+import com.cjdavis.iceholetracker.ui.BaseViewModel
 import com.cjdavis.iceholetracker.util.SingleLiveEvent
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.text.SimpleDateFormat
+import javax.inject.Inject
 
-class HomeScreenViewModel : ViewModel() {
+class MapViewViewModel @Inject constructor() : BaseViewModel() {
 
     var userMsg = SingleLiveEvent<String>()
 
@@ -36,8 +37,6 @@ class HomeScreenViewModel : ViewModel() {
     }
 
     private val sdfDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-
-    fun start() {}
 
     fun sendGPSCoordinates() {
         // TODO: Call Intent for Email app and attach file to new email
@@ -106,7 +105,7 @@ class HomeScreenViewModel : ViewModel() {
     }
 
     companion object {
-        val TAG: String = HomeScreenViewModel::class.java.simpleName
+        val TAG: String = MapViewViewModel::class.java.simpleName
 
         private const val FOLDER_NAME = "IceHoleTracker"
         private const val FILE_NAME = "saved-depths.csv"

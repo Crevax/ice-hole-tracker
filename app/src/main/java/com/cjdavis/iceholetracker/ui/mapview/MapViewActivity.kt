@@ -1,4 +1,4 @@
-package com.cjdavis.iceholetracker.ui
+package com.cjdavis.iceholetracker.ui.mapview
 
 import android.annotation.SuppressLint
 import android.arch.lifecycle.Observer
@@ -12,20 +12,23 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationListener
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
-import kotlinx.android.synthetic.main.activity_home_screen.*
-import android.arch.lifecycle.ViewModelProviders
-import android.databinding.DataBindingUtil
-import android.support.v7.app.AppCompatActivity
-import com.cjdavis.iceholetracker.BR
 import com.cjdavis.iceholetracker.R
-import com.cjdavis.iceholetracker.databinding.ActivityHomeScreenBinding
+import com.cjdavis.iceholetracker.databinding.ActivityMapViewBinding
+import com.cjdavis.iceholetracker.ui.BaseActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.android.synthetic.main.activity_map_view.*
 
-class HomeScreenActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
+class MapViewActivity : BaseActivity<MapViewViewModel, ActivityMapViewBinding>(),
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        LocationListener, OnMapReadyCallback {
+
+    override val viewModelClassToken = MapViewViewModel::class.java
+    override val layoutId = R.layout.activity_map_view
+
     private val mGoogleApiClient by lazy {
         GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -44,25 +47,12 @@ class HomeScreenActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallba
     }
     private lateinit var googleMap: GoogleMap
 
-    private var binding: ActivityHomeScreenBinding? = null
-    private lateinit var vm: HomeScreenViewModel
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        vm = ViewModelProviders.of(this).get(HomeScreenViewModel::class.java)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_home_screen)
-        binding?.setVariable(BR.vm, vm)
-        subscribeUI()
-        vm.start()
 
         mapFragment?.getMapAsync(this)
     }
 
-    override fun onDestroy() {
-        binding = null
-        super.onDestroy()
-    }
 
     override fun onResume() {
         super.onResume()
@@ -131,7 +121,7 @@ class HomeScreenActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallba
         }
     }
 
-    private fun subscribeUI() {
+    override fun subscribeUI() {
         vm.userMsg.observe(this, Observer { msg ->
             Toast.makeText(applicationContext, msg,
                     Toast.LENGTH_LONG).show()
@@ -141,7 +131,7 @@ class HomeScreenActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallba
     companion object {
 
         // TODO: Rewrite App so everything doesn't happen in one activity
-        val TAG: String = HomeScreenActivity::class.java.simpleName
+        val TAG: String = MapViewActivity::class.java.simpleName
 
         /*
          * Define a request code to send to Google Play services
