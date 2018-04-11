@@ -34,6 +34,7 @@ abstract class BaseActivity<TViewModel: BaseViewModel, TBinding: ViewDataBinding
 
         binding = DataBindingUtil.setContentView(this, layoutId)
         binding?.setVariable(BR.vm, vm)
+        binding?.setLifecycleOwner(this)
 
         subscribeUI()
         vm.start()

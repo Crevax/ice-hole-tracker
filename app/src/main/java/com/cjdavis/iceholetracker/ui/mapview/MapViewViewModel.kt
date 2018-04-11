@@ -4,6 +4,7 @@ import android.databinding.ObservableField
 import android.location.Location
 import android.os.Environment
 import android.util.Log
+import com.cjdavis.iceholetracker.service.CurrentLocationListener
 import com.cjdavis.iceholetracker.ui.BaseViewModel
 import com.cjdavis.iceholetracker.util.SingleLiveEvent
 import java.io.File
@@ -14,12 +15,12 @@ import javax.inject.Inject
 
 class MapViewViewModel @Inject constructor() : BaseViewModel() {
 
+    @Inject lateinit var currentLocation: CurrentLocationListener
+
     var userMsg = SingleLiveEvent<String>()
 
     var holeDepth = ObservableField<String>()
     var notes = ObservableField<String>()
-
-    var currentLocation = ObservableField<Location>()
 
     private lateinit var directory: File
     private lateinit var records: File
@@ -40,11 +41,11 @@ class MapViewViewModel @Inject constructor() : BaseViewModel() {
 
     fun sendGPSCoordinates() {
         // TODO: Call Intent for Email app and attach file to new email
-        userMsg.value = "Not implemented yet!"
+        userMsg.value = "Not implemented yet! ${currentLocation.value}"
     }
 
     fun saveGPSCoordinates() {
-        currentLocation.get()?.let {
+        currentLocation.value?.let {
             // TODO: compare location.getTime(), and if it's too old (we'll determine that later), request a location update)
             try {
                 // TODO: Find a better method of saving the file
