@@ -8,9 +8,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import javax.inject.Inject
 import com.cjdavis.iceholetracker.BR
 import com.cjdavis.iceholetracker.di.Injectable
+import javax.inject.Inject
 
 abstract class BaseFragment<TViewModel: BaseViewModel, TBinding: ViewDataBinding>
     : ViewLifeCycleFragment(), Injectable {

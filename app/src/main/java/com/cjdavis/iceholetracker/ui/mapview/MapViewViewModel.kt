@@ -1,7 +1,6 @@
 package com.cjdavis.iceholetracker.ui.mapview
 
 import android.databinding.ObservableField
-import android.location.Location
 import android.os.Environment
 import android.util.Log
 import com.cjdavis.iceholetracker.service.CurrentLocationListener
