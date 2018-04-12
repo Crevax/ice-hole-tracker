@@ -39,6 +39,8 @@ class MapViewViewModel @Inject constructor() : BaseViewModel() {
 
     private val sdfDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
+    val MIN_ACCURACY = 20.0f
+
     fun sendGPSCoordinates() {
         // TODO: Call Intent for Email app and attach file to new email
         userMsg.value = "Not implemented yet! ${currentLocation.value}"

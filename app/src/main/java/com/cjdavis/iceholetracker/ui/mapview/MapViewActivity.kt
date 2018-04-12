@@ -2,7 +2,6 @@ package com.cjdavis.iceholetracker.ui.mapview
 
 import android.annotation.SuppressLint
 import android.arch.lifecycle.Observer
-import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
 import com.cjdavis.iceholetracker.R
@@ -37,7 +36,6 @@ class MapViewActivity : BaseActivity<MapViewViewModel, ActivityMapViewBinding>()
 
     override fun onResume() {
         super.onResume()
-        btnSubmit.isEnabled = false
 
         vm.checkFile()
     }
@@ -59,7 +57,6 @@ class MapViewActivity : BaseActivity<MapViewViewModel, ActivityMapViewBinding>()
         vm.currentLocation.observe(this, Observer { location->
             location?.let {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(location.latitude, location.longitude)))
-                btnSubmit.isEnabled = location.accuracy <= MIN_ACCURACY
             } ?: call { btnSubmit.isEnabled = false }
         })
     }
@@ -68,7 +65,5 @@ class MapViewActivity : BaseActivity<MapViewViewModel, ActivityMapViewBinding>()
 
         // TODO: Rewrite App so everything doesn't happen in one activity
         val TAG: String = MapViewActivity::class.java.simpleName
-
-        private const val MIN_ACCURACY = 20.0f
     }
 }
