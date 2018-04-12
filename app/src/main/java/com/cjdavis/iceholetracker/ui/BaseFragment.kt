@@ -12,10 +12,11 @@ import com.cjdavis.iceholetracker.BR
 import com.cjdavis.iceholetracker.di.Injectable
 import javax.inject.Inject
 
-abstract class BaseFragment<TViewModel: BaseViewModel, TBinding: ViewDataBinding>
+abstract class BaseFragment<TViewModel : BaseViewModel, TBinding : ViewDataBinding>
     : ViewLifeCycleFragment(), Injectable {
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     protected abstract val viewModelClassToken: Class<TViewModel>
     protected abstract val layoutId: Int

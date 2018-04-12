@@ -17,8 +17,7 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideIceHoleTrackerApplication(application: Application): IceHoleTrackerApplication
-        = (application as IceHoleTrackerApplication)
+    fun provideIceHoleTrackerApplication(application: Application): IceHoleTrackerApplication = (application as IceHoleTrackerApplication)
 
     @Singleton
     @Provides

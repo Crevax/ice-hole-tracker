@@ -54,7 +54,7 @@ class MapViewActivity : BaseActivity<MapViewViewModel, ActivityMapViewBinding>()
                     Toast.LENGTH_LONG).show()
         })
 
-        vm.currentLocation.observe(this, Observer { location->
+        vm.currentLocation.observe(this, Observer { location ->
             location?.let {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(location.latitude, location.longitude)))
             } ?: call { btnSubmit.isEnabled = false }

@@ -14,7 +14,8 @@ import javax.inject.Inject
 
 class MapViewViewModel @Inject constructor() : BaseViewModel() {
 
-    @Inject lateinit var currentLocation: CurrentLocationListener
+    @Inject
+    lateinit var currentLocation: CurrentLocationListener
 
     var userMsg = SingleLiveEvent<String>()
 
@@ -25,16 +26,16 @@ class MapViewViewModel @Inject constructor() : BaseViewModel() {
     private lateinit var records: File
 
     private val isStorageReadable: Boolean
-    get() {
-        val storageState = Environment.getExternalStorageState()
-        return Environment.MEDIA_MOUNTED == storageState || Environment.MEDIA_MOUNTED_READ_ONLY == storageState
-    }
+        get() {
+            val storageState = Environment.getExternalStorageState()
+            return Environment.MEDIA_MOUNTED == storageState || Environment.MEDIA_MOUNTED_READ_ONLY == storageState
+        }
 
     private val isStorageWritable: Boolean
-    get() {
-        val storageState = Environment.getExternalStorageState()
-        return Environment.MEDIA_MOUNTED == storageState
-    }
+        get() {
+            val storageState = Environment.getExternalStorageState()
+            return Environment.MEDIA_MOUNTED == storageState
+        }
 
     private val sdfDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
@@ -68,7 +69,7 @@ class MapViewViewModel @Inject constructor() : BaseViewModel() {
 
             resetInput()
         } ?: run {
-            userMsg.value =  "Waiting for location"
+            userMsg.value = "Waiting for location"
         }
     }
 

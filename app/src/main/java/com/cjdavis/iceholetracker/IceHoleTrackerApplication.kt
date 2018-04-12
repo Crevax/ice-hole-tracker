@@ -7,7 +7,8 @@ import javax.inject.Inject
 
 class IceHoleTrackerApplication : DaggerApplication() {
 
-    @Inject lateinit var appLifecycleCallbacks: AppLifecycleCallbacks
+    @Inject
+    lateinit var appLifecycleCallbacks: AppLifecycleCallbacks
 
     override fun applicationInjector() = DaggerAppComponent
             .builder()

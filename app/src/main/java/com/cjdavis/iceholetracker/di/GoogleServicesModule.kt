@@ -14,6 +14,6 @@ class GoogleServicesModule {
     @Singleton
     fun provideGoogleApiClient(context: Context) = GoogleApiClient
             .Builder(context)
-                .addApi(LocationServices.API)
-                .build()
+            .addApi(LocationServices.API)
+            .build()
 }

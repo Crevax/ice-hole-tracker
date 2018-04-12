@@ -17,8 +17,9 @@ open class BaseViewModel : ViewModel() {
  * is currently only intended to be used by view models backing fragments
  * The base activities in the application do not call this method
  */
-abstract class LifeCycleViewModel: BaseViewModel() {
+abstract class LifeCycleViewModel : BaseViewModel() {
 
-    open fun startLoading(lifecycleOwner: LifecycleOwner) { /* this space for rent */}
+    open fun startLoading(lifecycleOwner: LifecycleOwner) { /* this space for rent */
+    }
 
 }

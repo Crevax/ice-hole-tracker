@@ -11,6 +11,5 @@ class ServiceModule {
 
     @Singleton
     @Provides
-    fun provideCurrentLocationListener(googleApiClient: GoogleApiClient)
-            = CurrentLocationListener(googleApiClient)
+    fun provideCurrentLocationListener(googleApiClient: GoogleApiClient) = CurrentLocationListener(googleApiClient)
 }

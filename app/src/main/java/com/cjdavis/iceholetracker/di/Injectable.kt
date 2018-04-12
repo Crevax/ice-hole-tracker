@@ -16,7 +16,7 @@ interface Injectable
 fun Application.applyAutoInjector() = registerActivityLifecycleCallbacks(
         object : Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
-                activity?.let{
+                activity?.let {
                     handleActivity(it)
                 }
             }

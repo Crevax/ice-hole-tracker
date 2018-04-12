@@ -15,7 +15,7 @@ import android.view.View
  * This manually implements and provides a lifecycle observer to avoid subtle bugs that may arise
  * from observing live data within fragments
  */
-abstract class ViewLifeCycleFragment: Fragment() {
+abstract class ViewLifeCycleFragment : Fragment() {
 
     private var viewLifecycleOwner: ViewLifecycleOwner? = null
     val lifeCycleOwner: LifecycleOwner
@@ -63,5 +63,5 @@ abstract class ViewLifeCycleFragment: Fragment() {
     }
 
     // Keeps implementation's onCreate cleaner, while ensuring LiveData subscriptions happen there
-    protected open fun subscribeUI() { }
+    protected open fun subscribeUI() {}
 }

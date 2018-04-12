@@ -13,11 +13,13 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
 
-abstract class BaseActivity<TViewModel: BaseViewModel, TBinding: ViewDataBinding> :
+abstract class BaseActivity<TViewModel : BaseViewModel, TBinding : ViewDataBinding> :
         AppCompatActivity(), HasSupportFragmentInjector {
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-    @Inject lateinit var androidInjector: DispatchingAndroidInjector<Fragment>
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject
+    lateinit var androidInjector: DispatchingAndroidInjector<Fragment>
 
     protected abstract val viewModelClassToken: Class<TViewModel>
     protected abstract val layoutId: Int
